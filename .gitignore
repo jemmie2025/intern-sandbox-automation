@@ -1,0 +1,42 @@
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# SSH credentials
+lab/ssh/
+
+# Virtual machine images and generated disks
+lab/images/
+*.qcow2
+*.iso
+
+# Generated cloud-init data
+lab/cloud-init/
+
+# Terraform local state and providers
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Ansible temporary files
+*.retry
+
+# Editor files
+.vscode/
+.idea/
