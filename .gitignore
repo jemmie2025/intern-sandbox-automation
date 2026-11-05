@@ -40,3 +40,6 @@ override.tf.json
 # Editor files
 .vscode/
 .idea/
+
+# Local WireGuard credentials and generated configuration
+/lab/wireguard/
