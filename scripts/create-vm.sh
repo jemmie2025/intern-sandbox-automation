@@ -47,7 +47,10 @@ fi
 
 echo "PASS: VM storage prepared for $TEAM"
 echo "SSH port: $SSH_PORT"
-if ps -eo args= | grep '[q]emu-system-x86_64' | grep -F -- "file=$DISK," >/dev/null; then
+if ps -eo pid=,comm=,args= | awk -v disk="file=$DISK," '
+  $2 == "qemu-system-x86_64" && index($0, disk) { found=1 }
+  END { exit !found }
+'; then
   echo "EXISTS: VM already running for $TEAM"
 else
   if ss -ltn | grep -qE "127\.0\.0\.1:$SSH_PORT[[:space:]]"; then
