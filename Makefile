@@ -15,6 +15,8 @@ validate:
 
 team-up: validate
 	@echo "Provisioning sandbox: $(TEAM)"
+	@bash scripts/create-wireguard.sh "$(TEAM)"
+	@bash scripts/create-nomad.sh "$(TEAM)"
 	@bash scripts/create-s3-bucket.sh "$(TEAM)"
 	@bash scripts/create-postgres-role.sh "$(TEAM)"
 	@bash scripts/create-postgres.sh "$(TEAM)"
@@ -22,4 +24,8 @@ team-up: validate
 
 team-down: validate
 	@echo "Teardown requested: $(TEAM)"
-	@echo "STATUS: Lifecycle integration pending; no resources changed"
+	@bash scripts/delete-wireguard.sh "$(TEAM)" --confirm
+	@bash scripts/delete-nomad.sh "$(TEAM)" --confirm
+	@bash scripts/delete-s3-bucket.sh "$(TEAM)" --confirm
+	@bash scripts/delete-postgres.sh "$(TEAM)" --confirm
+	@echo "STATUS: S3 and PostgreSQL teardown completed; remaining lifecycle integration pending"
