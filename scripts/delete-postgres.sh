@@ -53,4 +53,24 @@ if sudo -u postgres psql -d postgres -Atqc \
   echo "REMOVED: Role $ROLE_NAME"
 fi
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CREDENTIAL_FILE="$ROOT/lab/postgres/${TEAM}.password"
+
+REMAINING_ROLE=$(sudo -u postgres psql -X   -v ON_ERROR_STOP=1 -d postgres -Atc   "SELECT 1 FROM pg_roles WHERE rolname='$ROLE_NAME'")
+
+if [[ "$REMAINING_ROLE" == "1" ]]; then
+  echo "ERROR: PostgreSQL role still exists; credentials preserved" >&2
+  exit 1
+fi
+
+if [[ -L "$CREDENTIAL_FILE" ]]; then
+  echo "ERROR: Credential path is a symbolic link; refusing cleanup" >&2
+  exit 1
+fi
+
+if [[ -f "$CREDENTIAL_FILE" ]]; then
+  rm -- "$CREDENTIAL_FILE"
+  echo "REMOVED: PostgreSQL credential file for $TEAM"
+fi
+
 echo "PASS: PostgreSQL teardown completed for $TEAM"

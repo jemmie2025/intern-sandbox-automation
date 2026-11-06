@@ -41,16 +41,25 @@ if [[ ! -f "$SEED" ]]; then
   printf 'instance-id: %s-001\nlocal-hostname: %s\n' \
     "$TEAM" "$TEAM" > "$META"
 
-  cloud-localds "$SEED" "$USER_DATA" "$META"
+  TEAM_USER_DATA="$ROOT/lab/cloud-init/${TEAM}-user-data"
+
+  if ! grep -qE '^[[:space:]]*hostname:' "$USER_DATA"; then
+    echo "ERROR: Hostname setting missing from cloud-init template" >&2
+    exit 1
+  fi
+
+  sed -E "s/^([[:space:]]*hostname:[[:space:]]*).*/\\1$TEAM/" \
+    "$USER_DATA" > "$TEAM_USER_DATA"
+
+  chmod 600 "$TEAM_USER_DATA"
+
+  cloud-localds "$SEED" "$TEAM_USER_DATA" "$META"
   echo "CREATED: Cloud-init seed for $TEAM"
 fi
 
 echo "PASS: VM storage prepared for $TEAM"
 echo "SSH port: $SSH_PORT"
-if ps -eo pid=,comm=,args= | awk -v disk="file=$DISK," '
-  $2 == "qemu-system-x86_64" && index($0, disk) { found=1 }
-  END { exit !found }
-'; then
+if python3 "$ROOT/scripts/vm-running.py" "$DISK"; then
   echo "EXISTS: VM already running for $TEAM"
 else
   if ss -ltn | grep -qE "127\.0\.0\.1:$SSH_PORT[[:space:]]"; then

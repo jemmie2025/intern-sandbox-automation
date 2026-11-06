@@ -16,7 +16,6 @@ validate:
 team-up: validate
 	@echo "Provisioning sandbox: $(TEAM)"
 	@bash scripts/create-vm.sh "$(TEAM)"
-	@bash scripts/create-vm.sh "$(TEAM)"
 	@bash scripts/create-wireguard.sh "$(TEAM)"
 	@bash scripts/create-nomad.sh "$(TEAM)"
 	@bash scripts/create-s3-bucket.sh "$(TEAM)"

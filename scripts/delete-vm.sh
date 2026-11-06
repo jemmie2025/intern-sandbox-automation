@@ -48,7 +48,7 @@ if (( ${#PIDS[@]} == 1 )); then
 
   STOPPED=false
 
-  for ((i=0; i<30; i++)); do
+  for ((i=0; i<60; i++)); do
     if ! kill -0 "$PID" 2>/dev/null; then
       STOPPED=true
       break
@@ -57,7 +57,7 @@ if (( ${#PIDS[@]} == 1 )); then
   done
 
   if [[ "$STOPPED" != true ]]; then
-    echo "ERROR: VM did not stop within 60 seconds; refusing further cleanup" >&2
+    echo "ERROR: VM did not stop within 120 seconds; refusing further cleanup" >&2
     exit 1
   fi
 

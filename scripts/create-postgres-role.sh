@@ -13,7 +13,19 @@ ROLE="${TEAM//-/_}"
 CREDENTIAL_FILE="lab/postgres/${TEAM}.password"
 
 if [[ -e "$CREDENTIAL_FILE" ]]; then
-  echo "ERROR: Credential file already exists; refusing overwrite" >&2
+  [[ ! -L "$CREDENTIAL_FILE" && -f "$CREDENTIAL_FILE" && -s "$CREDENTIAL_FILE" ]] || {
+    echo "ERROR: Existing credential file is invalid" >&2
+    exit 1
+  }
+
+  EXISTS=$(sudo -u postgres psql -X -v ON_ERROR_STOP=1     -d postgres -Atc     "SELECT 1 FROM pg_roles WHERE rolname = '$ROLE'")
+
+  if [[ "$EXISTS" == "1" ]]; then
+    echo "EXISTS: PostgreSQL role and credentials preserved for $TEAM"
+    exit 0
+  fi
+
+  echo "ERROR: Credentials exist but role is absent; manual recovery required" >&2
   exit 1
 fi
 
