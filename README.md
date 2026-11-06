@@ -116,3 +116,27 @@ Project Status
 Local infrastructure validation completed.
 
 Successfully provisioned an Ubuntu virtual machine, configured SSH authentication, and verified Ansible connectivity. The next phase focuses on automating the complete sandbox lifecycle, including secure resource provisioning and teardown.
+
+## Automated Sandbox Lifecycle
+
+This project automates team-specific infrastructure provisioning and teardown in an isolated local lab using QEMU/KVM, WireGuard, Nomad, PostgreSQL, and S3-compatible storage.
+
+### Provision a Team
+
+`make team-up TEAM=lab-team-05`
+
+Provisions a VM, WireGuard peer, Nomad namespace and ACL policy, PostgreSQL database and role, and S3-compatible bucket.
+
+### Tear Down a Team
+
+`make team-down TEAM=lab-team-05`
+
+Teardown includes safety checks and preserves VM disks. Complete one-command teardown validation remains outstanding.
+
+### Validation Evidence
+
+See [Lifecycle Validation](docs/lifecycle-validation.md) for verified results and remaining tasks.
+
+### Deployment Scope
+
+Local sandbox only. Production deployment requires engineering review and approved credentials.
