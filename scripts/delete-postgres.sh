@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 TEAM="${1:-}"
 CONFIRM="${2:-}"
 
@@ -53,7 +55,6 @@ if sudo -u postgres psql -d postgres -Atqc \
   echo "REMOVED: Role $ROLE_NAME"
 fi
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CREDENTIAL_FILE="$ROOT/lab/postgres/${TEAM}.password"
 
 REMAINING_ROLE=$(sudo -u postgres psql -X   -v ON_ERROR_STOP=1 -d postgres -Atc   "SELECT 1 FROM pg_roles WHERE rolname='$ROLE_NAME'")
