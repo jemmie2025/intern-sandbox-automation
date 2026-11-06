@@ -43,3 +43,6 @@ override.tf.json
 
 # Local WireGuard credentials and generated configuration
 /lab/wireguard/
+
+# Local sandbox runtime data and secrets
+/lab/
