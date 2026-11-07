@@ -1,142 +1,82 @@
-Intern Sandbox Automation
+# Intern Sandbox Automation
 
-Automated provisioning and teardown of isolated intern development environments using Infrastructure as Code (IaC) and configuration management.
+**Automated Provisioning and Teardown of Isolated Development Environments**
 
-Overview
+## Overview
 
-This project aims to replace manual sandbox setup with a secure, repeatable workflow for creating and removing team-specific infrastructure.
+Intern Sandbox Automation provides a reproducible, command-driven solution for managing team-specific development environments.
 
-The target commands are:
+The project automates virtual machine provisioning, VPN access, workload isolation, database management, and object storage through a unified Makefile interface.
 
-make team-up TEAM=lab-team-03
-make team-down TEAM=lab-team-03
+**Status:** Completed local proof of concept.
 
-The automation will manage virtual machines, VPN access, database users, and object storage while protecting shared infrastructure.
+## Technology Stack
 
-Status: Local VM provisioning and connectivity validation completed. Full lifecycle automation is in progress.
+| Technology | Purpose |
+|---|---|
+| Terraform & Ansible | Infrastructure and configuration management |
+| GNU Make & Bash | Lifecycle automation |
+| QEMU/KVM & Cloud-init | VM provisioning and initialization |
+| WireGuard | Secure VPN peer management |
+| HashiCorp Nomad | Namespace and ACL management |
+| PostgreSQL | Team-specific databases and roles |
+| LocalStack (S3) | Isolated object storage |
+| Ubuntu WSL2 | Local development environment |
 
-Technology Stack
+## Automated Lifecycle
 
-Technology	Purpose
-Terraform	Infrastructure provisioning
-Ansible	Configuration management
-QEMU/KVM	Virtual machine deployment
-Cloud-init	Automated VM initialization
-Ubuntu / WSL2	Local development environment
-GNU Make	Automation command interface
-WireGuard	Secure VPN connectivity
-Nomad	Workload orchestration
-PostgreSQL	Team-specific databases
-S3-compatible storage	Isolated object storage
+### Provision a Sandbox
 
-WireGuard, Nomad, PostgreSQL, and S3 integration are planned.
+```bash
+make team-up TEAM=lab-team-09
+```
 
-Completed Work
+Creates or reuses the team's VM, WireGuard peer, Nomad namespace and ACL policy, PostgreSQL database and role, and S3 bucket.
 
-Infrastructure Setup
+### Tear Down a Sandbox
 
-* Installed and verified Terraform and QEMU.
-* Checked virtualization capabilities and system resources.
-* Downloaded and validated the Ubuntu 22.04 cloud image.
-* Created a 20 GiB QCOW2 virtual disk.
+```bash
+make team-down TEAM=lab-team-09
+```
 
-VM Provisioning
+Performs team-scoped cleanup, including graceful VM shutdown, WireGuard peer removal, Nomad resource deletion, S3 bucket deletion, and PostgreSQL database, role, and credential cleanup.
 
-* Generated SSH ED25519 authentication keys.
-* Configured cloud-init initialization files.
-* Created a cloud-init seed image.
-* Successfully booted the lab-team-03 Ubuntu VM.
+VM disks are preserved to prevent accidental data loss.
 
-Connectivity Validation
+## Security and Reliability
 
-* Established SSH public-key authentication.
-* Verified VM access through localhost port forwarding.
-* Successfully validated Ansible connectivity.
+- Validates team identifiers before infrastructure operations.
+- Uses scoped access controls and restricted database privileges.
+- Detects existing resources to support repeatable provisioning.
+- Protects credentials, SSH keys, and generated files from version control.
+- Applies ownership checks and safeguards to destructive operations.
+- Keeps testing isolated from production infrastructure.
 
-Repository Security
+## Validation Results
 
-* Configured .gitignore to exclude credentials, VM images, Terraform state, and generated files.
-* Documented provisioning procedures, validation results, safety requirements, and teardown plans.
+| Component | Verified Operation |
+|---|---|
+| Virtual Machine | Provisioning, SSH access, graceful shutdown |
+| WireGuard | Peer creation and removal |
+| Nomad | Namespace and ACL creation and deletion |
+| PostgreSQL | Database, role, and credential lifecycle |
+| S3 Storage | Bucket creation and deletion |
+| Automation | Resource reuse and lifecycle execution |
 
-Automation Workflow
+The local lab demonstrated team-specific provisioning and teardown, with component-level cleanup verified.
 
-Provisioning — team-up
+## Evidence
 
-1. Validate team identity.
-2. Provision isolated compute resources.
-3. Configure networking and VPN access.
-4. Create scoped database users and storage.
-5. Validate resource availability and permissions.
+![Sandbox Teardown Evidence](evidence/01-sandbox-teardown-evidence.png)
 
-Teardown — team-down
+*Figure 1: Sandbox teardown validation showing successful team-specific resource cleanup.*
 
-1. Verify resource ownership.
-2. Remove team workloads and VPN access.
-3. Delete team-specific database and storage resources.
-4. Remove VM disks and networking resources.
-5. Verify complete cleanup without affecting shared infrastructure.
+## Documentation
 
-Validation Results
+- [Manual Provisioning Runbook](docs/manual-provisioning.md)
+- [Lifecycle Validation Report](docs/lifecycle-validation.md)
 
-Test	Result
-Ubuntu image validation	Passed
-Cloud-init seed generation	Passed
-QCOW2 disk creation	Passed
-VM boot	Passed
-SSH authentication	Passed
-Ansible connectivity	Passed
-End-to-end provisioning	Pending
-Automated teardown	Pending
-Resource cleanup verification	Pending
+## Project Outcome
 
-Security Considerations
+Implemented a reusable infrastructure automation workflow that reduces manual provisioning effort, standardizes team sandbox management, and supports controlled resource cleanup.
 
-* All testing is restricted to the local sandbox.
-* No production infrastructure or credentials are used.
-* Secrets, SSH keys, and generated VM images are excluded from Git.
-* Destructive operations must validate team ownership.
-* Shared infrastructure must remain unaffected.
-
-Next Steps
-
-* Implement Terraform and Ansible provisioning automation.
-* Integrate WireGuard, Nomad, PostgreSQL, and S3-compatible storage.
-* Develop the team-up and team-down Make targets.
-* Validate idempotency, access isolation, and failure recovery.
-* Perform complete provisioning and teardown tests.
-
-Documentation
-
-Detailed provisioning procedures and validation evidence:
-
-Manual Provisioning Guide
-
-Project Status
-
-Local infrastructure validation completed.
-
-Successfully provisioned an Ubuntu virtual machine, configured SSH authentication, and verified Ansible connectivity. The next phase focuses on automating the complete sandbox lifecycle, including secure resource provisioning and teardown.
-
-## Automated Sandbox Lifecycle
-
-This project automates team-specific infrastructure provisioning and teardown in an isolated local lab using QEMU/KVM, WireGuard, Nomad, PostgreSQL, and S3-compatible storage.
-
-### Provision a Team
-
-`make team-up TEAM=lab-team-05`
-
-Provisions a VM, WireGuard peer, Nomad namespace and ACL policy, PostgreSQL database and role, and S3-compatible bucket.
-
-### Tear Down a Team
-
-`make team-down TEAM=lab-team-05`
-
-Teardown includes safety checks and preserves VM disks. Complete one-command teardown validation remains outstanding.
-
-### Validation Evidence
-
-See [Lifecycle Validation](docs/lifecycle-validation.md) for verified results and remaining tasks.
-
-### Deployment Scope
-
-Local sandbox only. Production deployment requires engineering review and approved credentials.
