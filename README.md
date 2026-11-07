@@ -73,8 +73,11 @@ The local lab demonstrated team-specific provisioning and teardown, with compone
 
 ## Documentation
 
+- [System Architecture](docs/architecture.md)
 - [Manual Provisioning Runbook](docs/manual-provisioning.md)
 - [Lifecycle Validation Report](docs/lifecycle-validation.md)
+
+
 
 ## Project Outcome
 
